@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from address.models import AddressField
+# from address.address import *
 
 # Create your models here.
 
@@ -25,7 +25,7 @@ class Item(models.Model):
             ("Cardigan", 'cardigan'),
             ("suit", "Suit"),
             ("Raincoat", "raincoat"),
-            ("sleeveless_shirt", "Sleeveless shirt", "sleeveless shirt"),
+            ("sleeveless_shirt", "Sleeveless shirt"),
             ("Belt", "belt"),
             ("other", "Other"),
         ]
@@ -57,7 +57,8 @@ class ItemCondition(models.Model):
     #     ]
     # }
 
-    condition = models.CharField(max_length=128, db_column="item_condition")
+    condition = models.CharField(max_length=128, db_column="condition")
+    item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
 
 
 class DeliveryMethods(models.Model):
@@ -87,7 +88,8 @@ class UserDeliveryMethods(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     delivery_method = models.ForeignKey(DeliveryMethods, on_delete=models.CASCADE)
-    address = AddressField(on_delete=models.CASCADE)
+    # address = AddressField(on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
 
 class ItemInterest(models.Model):
