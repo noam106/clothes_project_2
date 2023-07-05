@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 # from address.address import *
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 # Create your models here.
 
@@ -100,3 +102,20 @@ class ItemInterest(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+
+
+class Review(models.Model):
+
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    rating = models.SmallIntegerField(
+        db_column='rating', null=False, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    review_text = models.TextField(
+        db_column='review_text', null=True, blank=True
+    )
+
+    created_at = models.DateField(db_column='created_at', null=False, auto_now_add=True)
+
+    class Meta:
+        db_table = 'reviews'
