@@ -1,13 +1,11 @@
-from django.urls import path
-from rest_framework.routers import DefaultRouter
+from django.urls import include, path
+from rest_framework import routers
 
-from clothes_app.views.items import ItemsViewSet
+from clothes_app.views.items import ItemViewSet
 
-# automatically defining urls for MoviesViewSet
-router = DefaultRouter()
-router.register('', itemsViewSet)
+router = routers.DefaultRouter()
+router.register(r'items', ItemViewSet)
 
-urlpatterns = []
-
-# adding movies urls to urlpatterns
-urlpatterns.extend(router.urls)
+urlpatterns = [
+    path('', include(router.urls)),
+]

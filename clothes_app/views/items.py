@@ -20,11 +20,20 @@ class ItemPermissions(BasePermission):
         return True
 
     class ItemFilterSet(FilterSet):
-        name = django_filters.CharFilter(field_name='name', lookup_expr='iexact')
-        min_price = django_filters.NumberFilter('release_year', lookup_expr='gte')
-        max_price = django_filters.NumberFilter('release_year', lookup_expr='lte')
+        min_price = django_filters.NumberFilter('price', lookup_expr='gte')
+        max_price = django_filters.NumberFilter('price', lookup_expr='lte')
         description = django_filters.CharFilter(field_name='description', lookup_expr='icontains')
+        name = django_filters.CharFilter(lookup_expr='icontains')
+        item_type = django_filters.ChoiceFilter(choices=Item.CLOTHES_LIST)
+        colors = django_filters.CharFilter(lookup_expr='icontains')
+        item_condition = django_filters.CharFilter(field_name='item_condition__name', lookup_expr='icontains')
 
         class Meta:
             model = Item
-            fields = ['name']
+            fields = ['name', 'item_type', 'colors', 'item_condition', 'price']
+
+
+class ItemViewSet(viewsets.ModelViewSet):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
