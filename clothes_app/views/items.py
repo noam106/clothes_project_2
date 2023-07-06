@@ -19,3 +19,12 @@ class ItemPermissions(BasePermission):
             return request.user.is_staff
         return True
 
+    class ItemFilterSet(FilterSet):
+        name = django_filters.CharFilter(field_name='name', lookup_expr='iexact')
+        min_price = django_filters.NumberFilter('release_year', lookup_expr='gte')
+        max_price = django_filters.NumberFilter('release_year', lookup_expr='lte')
+        description = django_filters.CharFilter(field_name='description', lookup_expr='icontains')
+
+        class Meta:
+            model = Item
+            fields = ['name']

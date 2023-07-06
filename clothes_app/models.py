@@ -1,47 +1,53 @@
 from django.db import models
 from django.contrib.auth.models import User
 # from address.address import *
-from django.core.validators import MinValueValidator, MaxValueValidator
-
-
-# Create your models here.
+from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator
 
 
 class Item(models.Model):
 
     CLOTHES_LIST = {
         'clothe': [
-            ('Sweater', 'sweater'),
-            ('Jacket', "jacket"),
-            ("Pants", "pants"),
-            ("Vest", "vest"),
-            ("Coat", "coat"),
-            ("Dress", "dress"),
-            ("Jeans", "jeans"),
-            ("Shirt", "shirt"),
-            ("Shorts", "shorts"),
-            ("Swimsuit", "swimsuit"),
-            ("Skirt", "skirt"),
-            ("Sock", "sock"),
-            ("Pajamas", "pajamas"),
-            ("Cardigan", 'cardigan'),
-            ("suit", "Suit"),
-            ("Raincoat", "raincoat"),
-            ("sleeveless_shirt", "Sleeveless shirt"),
-            ("Belt", "belt"),
-            ("other", "Other"),
+            ('sweater', 'Sweater'),
+            ('jacket', 'Jacket'),
+            ('pants', 'Pants'),
+            ('vest', 'Vest'),
+            ('coat', 'Coat'),
+            ('dress', 'Dress'),
+            ('jeans', 'Jeans'),
+            ('shirt', 'Shirt'),
+            ('shorts', 'Shorts'),
+            ('swimsuit', 'Swimsuit'),
+            ('skirt', 'Skirt'),
+            ('sock', 'Sock'),
+            ('pajamas', 'Pajamas'),
+            ('cardigan', 'Cardigan'),
+            ('suit', 'Suit'),
+            ('raincoat', 'Raincoat'),
+            ('sleeveless_shirt', 'Sleeveless shirt'),
+            ('belt', 'Belt'),
+            ('other', 'Other'),
+
         ]
     }
 
     class Meta:
         db_table = "items"
         ordering = ['id']
-
+    # name will be used as haeder for the item
+    name = models.CharField(max_length=256, validators=[MinLengthValidator(4)], db_column='name', null=False, blank=False)
     item_type = models.CharField(max_length=256, choices=CLOTHES_LIST['clothe'], db_column="item type")
     colors = models.CharField(max_length=128, db_column='colors', null=False, blank=False,)
     description = models.TextField(db_column='description', null=True, blank=True)
     item_condition = models.ForeignKey('ItemCondition', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_column="price", default=0)
+    is_free = models.BooleanField(default=False, db_column='is free')
+
+    def save(self, *args, **kwargs):
+        if self.price == 0:
+            self.is_free = True
+        super().save(*args, **kwargs)
 
 
 class ItemCondition(models.Model):
@@ -81,7 +87,7 @@ class DeliveryMethods(models.Model):
 
     method = models.CharField(max_length=128, choices=METHODS['method'], null=False, blank=False, db_column='method')
 
-
+# do i need to change the name to ItemDeliveryMethods???
 class UserDeliveryMethods(models.Model):
 
     class Meta:
