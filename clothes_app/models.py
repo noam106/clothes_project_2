@@ -35,7 +35,8 @@ class Item(models.Model):
         db_table = "items"
         ordering = ['id']
     # name will be used as haeder for the item
-    name = models.CharField(max_length=256, validators=[MinLengthValidator(4)], db_column='name', null=False, blank=False)
+    name = models.CharField(max_length=256, validators=[MinLengthValidator(4)], default='none', db_column='name',
+                            null=False, blank=False)
     item_type = models.CharField(max_length=256, choices=CLOTHES_LIST['clothe'], db_column="item type")
     colors = models.CharField(max_length=128, db_column='colors', null=False, blank=False,)
     description = models.TextField(db_column='description', null=True, blank=True)
@@ -88,6 +89,8 @@ class DeliveryMethods(models.Model):
     method = models.CharField(max_length=128, choices=METHODS['method'], null=False, blank=False, db_column='method')
 
 # do i need to change the name to ItemDeliveryMethods???
+
+
 class UserDeliveryMethods(models.Model):
 
     class Meta:
