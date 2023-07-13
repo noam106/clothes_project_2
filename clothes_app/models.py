@@ -1,7 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 # from address.address import *
 from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Item(models.Model):
@@ -30,52 +31,14 @@ class Item(models.Model):
 
         ]
     }
-
-    class Meta:
-        db_table = "items"
-        ordering = ['id']
-    # name will be used as haeder for the item
-    name = models.CharField(max_length=256, validators=[MinLengthValidator(4)], default='none', db_column='name',
-                            null=False, blank=False)
-    item_type = models.CharField(max_length=256, choices=CLOTHES_LIST['clothe'], db_column="item type")
-    colors = models.CharField(max_length=128, db_column='colors', null=False, blank=False,)
-    description = models.TextField(db_column='description', null=True, blank=True)
-    item_condition = models.ForeignKey('ItemCondition', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_column="price", default=0)
-    is_free = models.BooleanField(default=False, db_column='is free')
-
-    def save(self, *args, **kwargs):
-        if self.price == 0:
-            self.is_free = True
-        super().save(*args, **kwargs)
-
-
-class ItemCondition(models.Model):
-
-    class Meta:
-        db_table = "item_condition"
-        ordering = ['id']
-
-    # CONDITION = {
-    #     "condition": [
-    #         ("as new", "As New"),
-    #         ("used", "Used"),
-    #         ("Needed repair", "needed_repair"),
-    #         ("In box", "in_box"),
-    #     ]
-    # }
-
-    condition = models.CharField(max_length=128, db_column="condition")
-    item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
-
-
-class DeliveryMethods(models.Model):
-
-    class Meta:
-        db_table = "delivery_method"
-        ordering = ['id']
-
+    CONDITION = {
+        "condition": [
+            ("as new", "As New"),
+            ("used", "Used"),
+            ("Needed repair", "needed_repair"),
+            ("In box", "in_box"),
+        ]
+    }
     METHODS = {
         "method": [
             ("pyment_delivery", "Payment delivery"),
@@ -86,21 +49,78 @@ class DeliveryMethods(models.Model):
         ]
     }
 
-    method = models.CharField(max_length=128, choices=METHODS['method'], null=False, blank=False, db_column='method')
+    class Meta:
+        db_table = "items"
+        ordering = ['id']
+    # name will be used as haeder for the item
+    name = models.CharField(max_length=256, validators=[MinLengthValidator(4)], default='none', db_column='name',
+                            null=False, blank=False)
+    item_type = models.CharField(max_length=256, choices=CLOTHES_LIST['clothe'], db_column="item_type")
+    colors = models.CharField(max_length=128, db_column='colors', null=False, blank=False,)
+    description = models.TextField(db_column='description', null=True, blank=True)
+    item_condition = models.CharField(max_length=256, choices=CONDITION['condition'], blank=True, null=True, db_column="item_condition")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_column="price", default=0)
+    is_free = models.BooleanField(default=False, db_column='is free')
+    delivery_method = models.CharField(max_length=256, choices=METHODS['method'], db_column="delivery_method", blank=True, null=True)
 
-# do i need to change the name to ItemDeliveryMethods???
+    def save(self, *args, **kwargs):
+        if self.price == 0:
+            self.is_free = True
+        super().save(*args, **kwargs)
 
 
-class UserDeliveryMethods(models.Model):
+class IsraeliAddress(models.Model):
+    street_address = models.CharField(max_length=255)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    district = models.CharField(max_length=255)
+    postal_code = models.CharField(max_length=10,  null=True, blank=True)
 
     class Meta:
-        db_table = "user_delivery_method"
-        ordering = ['id']
+        ordering = ['city', 'district', 'postal_code']
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    delivery_method = models.ForeignKey(DeliveryMethods, on_delete=models.CASCADE)
-    # address = AddressField(on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.street_address}, {self.city}, {self.district}, {self.postal_code}'
+
+
+class CustomerDetails(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    address = models.ForeignKey(IsraeliAddress, on_delete=models.PROTECT)
+    phone_number = PhoneNumberField(unique=True, null=False, blank=False)
+
+
+# class DeliveryMethods(models.Model):
+#
+#     class Meta:
+#         db_table = "delivery_method"
+#         ordering = ['id']
+#
+#     METHODS = {
+#         "method": [
+#             ("pyment_delivery", "Payment delivery"),
+#             ("pickup_from_seller", "Pickup from seller"),
+#             ("pickup_from_other_location", "Pickup from other location"),
+#             ("free_delivery", "Free delivery"),
+#             ("other", "Other"),
+#         ]
+#     }
+#
+#     method = models.CharField(max_length=128, choices=METHODS['method'], null=False, blank=False, db_column='method')
+#
+# # do i need to change the name to ItemDeliveryMethods???
+#
+#
+# class ItemDeliveryMethods(models.Model):
+#
+#     class Meta:
+#         db_table = "user_delivery_method"
+#         ordering = ['id']
+#
+#     # user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     delivery_method = models.ForeignKey(DeliveryMethods, on_delete=models.CASCADE)
+#     # address = AddressField(on_delete=models.CASCADE)
+#     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
 
 class ItemInterest(models.Model):
@@ -116,7 +136,8 @@ class ItemInterest(models.Model):
 class Review(models.Model):
 
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviewer_set')
+    reviewed = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviewed_set')
 
     rating = models.SmallIntegerField(
         db_column='rating', null=False, validators=[MinValueValidator(1), MaxValueValidator(10)])

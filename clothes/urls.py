@@ -20,6 +20,6 @@ from clothes_app.views.stats import stats
 
 urlpatterns = [
     path('api/auth/', include('clothes_app.urls.auth')),
-    path('api/item/', include('clothes_app.urls.items')),
+    path('api/items/', include('clothes_app.urls.items')),
     path('admin/', admin.site.urls),
 ]

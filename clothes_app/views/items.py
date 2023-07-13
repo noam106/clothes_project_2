@@ -19,18 +19,19 @@ class ItemPermissions(BasePermission):
             return request.user.is_staff
         return True
 
-    class ItemFilterSet(FilterSet):
-        min_price = django_filters.NumberFilter('price', lookup_expr='gte')
-        max_price = django_filters.NumberFilter('price', lookup_expr='lte')
-        description = django_filters.CharFilter(field_name='description', lookup_expr='icontains')
-        name = django_filters.CharFilter(lookup_expr='icontains')
-        item_type = django_filters.ChoiceFilter(choices=Item.CLOTHES_LIST)
-        colors = django_filters.CharFilter(lookup_expr='icontains')
-        item_condition = django_filters.CharFilter(field_name='item_condition__name', lookup_expr='icontains')
 
-        class Meta:
-            model = Item
-            fields = ['name', 'item_type', 'colors', 'item_condition', 'price']
+class ItemFilterSet(FilterSet):
+    min_price = django_filters.NumberFilter('price', lookup_expr='gte')
+    max_price = django_filters.NumberFilter('price', lookup_expr='lte')
+    description = django_filters.CharFilter(field_name='description', lookup_expr='icontains')
+    name = django_filters.CharFilter(lookup_expr='icontains')
+    item_type = django_filters.ChoiceFilter(choices=Item.CLOTHES_LIST)
+    colors = django_filters.CharFilter(lookup_expr='icontains')
+    item_condition = django_filters.CharFilter(field_name='item_condition__name', lookup_expr='icontains')
+
+    class Meta:
+        model = Item
+        fields = ['name', 'item_type', 'colors', 'item_condition', 'price']
 
 
 class ItemViewSet(viewsets.ModelViewSet):
