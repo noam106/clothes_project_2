@@ -4,7 +4,6 @@ from rest_framework import viewsets, mixins
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission, SAFE_METHODS
 from rest_framework.viewsets import GenericViewSet
-
 from clothes_app.models import Item
 from clothes_app.serializers.items import ItemSerializer
 
@@ -23,6 +22,7 @@ class ItemPermissions(BasePermission):
 class ItemFilterSet(FilterSet):
     min_price = django_filters.NumberFilter('price', lookup_expr='gte')
     max_price = django_filters.NumberFilter('price', lookup_expr='lte')
+    price = django_filters.RangeFilter(field_name='price')
     description = django_filters.CharFilter(field_name='description', lookup_expr='icontains')
     name = django_filters.CharFilter(lookup_expr='icontains')
     item_type = django_filters.ChoiceFilter(choices=Item.CLOTHES_LIST)
@@ -37,4 +37,4 @@ class ItemFilterSet(FilterSet):
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
-
+    filterset_class = ItemFilterSet

@@ -3,9 +3,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-
 from clothes_app.serializers.auth import SignupSerializer, UserSerializer
 
+
+# class UserViewSet(ModelViewSet):
+#
+#     serializer_class = UserSerializer
+#     queryset = User.
 
 @api_view(['POST'])
 def signup(request):

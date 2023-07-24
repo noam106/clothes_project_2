@@ -1,13 +1,15 @@
 from django.contrib.auth.models import User
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from clothes_app.models import CustomerDetails
 
 
 class SignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'first_name', 'last_name', 'is_staff')
+        fields = ('email', 'password', 'first_name', 'last_name', 'is_staff', "phone_number")
 
     email = serializers.EmailField(
         write_only=True,
@@ -17,18 +19,20 @@ class SignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, allow_null=False, allow_blank=False)
     first_name = serializers.CharField(write_only=True, required=True, allow_blank=False, allow_null=False)
     last_name = serializers.CharField(write_only=True, required=True, allow_blank=False, allow_null=False)
+    phone_number = serializers.CharField(write_only=True, required=True, allow_blank=False, allow_null=False, max_length=10)
 
     def create(self, validated_data):
-        user = User.objects.create(
-            username=validated_data['email'],
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            is_staff=validated_data['is_staff']
+        with transaction.atomic():
+            user = User.objects.create(
+                username=validated_data['email'],
+                email=validated_data['email'],
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name'],
+                is_staff=validated_data['is_staff'],
         )
-
         user.set_password(validated_data['password'])
         user.save()
+        customer_details = CustomerDetails.objects.create(user=user, phone_number=validated_data['phone_number'])
 
         return user
 

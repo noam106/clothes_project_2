@@ -59,7 +59,7 @@ class Item(models.Model):
     colors = models.CharField(max_length=128, db_column='colors', null=False, blank=False,)
     description = models.TextField(db_column='description', null=True, blank=True)
     item_condition = models.CharField(max_length=256, choices=CONDITION['condition'], blank=True, null=True, db_column="item_condition")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='items')
     price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_column="price", default=0)
     is_free = models.BooleanField(default=False, db_column='is free')
     delivery_method = models.CharField(max_length=256, choices=METHODS['method'], db_column="delivery_method", blank=True, null=True)
@@ -86,9 +86,14 @@ class IsraeliAddress(models.Model):
 
 class CustomerDetails(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    address = models.ForeignKey(IsraeliAddress, on_delete=models.PROTECT)
+    user = models.OneToOneField(User, on_delete=models.PROTECT, related_name='customer_dateils')
+    address = models.ForeignKey(IsraeliAddress, on_delete=models.PROTECT, null=True, blank= True)
     phone_number = PhoneNumberField(unique=True, null=False, blank=False)
+
+    class Meta:
+        db_table = "customer_dateils"
+        ordering = ['id']
+
 
 
 # class DeliveryMethods(models.Model):
@@ -130,22 +135,19 @@ class ItemInterest(models.Model):
         db_table = "items_interest"
         ordering = ['id']
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='item_intrest')
+    item = models.ForeignKey(Item, on_delete=models.RESTRICT, related_name='item_intrest')
 
 
 class Review(models.Model):
 
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviewer_set')
-    reviewed = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviewed_set')
+    item = models.ForeignKey(Item, on_delete=models.RESTRICT)
+    reviewer = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='reviewer_set')
+    reviewed = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='reviewed_set')
+    review_date = models.DateTimeField(auto_now_add=True)
 
-    rating = models.SmallIntegerField(
-        db_column='rating', null=False, validators=[MinValueValidator(1), MaxValueValidator(10)])
-    review_text = models.TextField(
-        db_column='review_text', null=True, blank=True
-    )
-
+    rating = models.SmallIntegerField(db_column='rating', null=False, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    review_text = models.TextField(db_column='review_text', null=True, blank=True)
     created_at = models.DateField(db_column='created_at', null=False, auto_now_add=True)
 
     class Meta:
