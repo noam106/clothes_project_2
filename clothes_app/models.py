@@ -73,10 +73,11 @@ class Item(models.Model):
 class IsraeliAddress(models.Model):
     street_address = models.CharField(max_length=255)
     city = models.CharField(max_length=255, null=True, blank=True)
-    district = models.CharField(max_length=255)
+    district = models.CharField(max_length=255, null=True, blank=True)
     postal_code = models.CharField(max_length=10,  null=True, blank=True)
 
     class Meta:
+        db_table = "address"
         ordering = ['city', 'district', 'postal_code']
 
     def __str__(self):
