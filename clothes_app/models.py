@@ -71,8 +71,8 @@ class Item(models.Model):
 
 
 class IsraeliAddress(models.Model):
-    street_address = models.CharField(max_length=255)
-    city = models.CharField(max_length=255, null=True, blank=True)
+    street_address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=255, null=False, blank=False)
     district = models.CharField(max_length=255, null=True, blank=True)
     postal_code = models.CharField(max_length=10,  null=True, blank=True)
 
