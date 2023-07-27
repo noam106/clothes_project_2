@@ -59,7 +59,7 @@ class Item(models.Model):
     colors = models.CharField(max_length=128, db_column='colors', null=False, blank=False,)
     description = models.TextField(db_column='description', null=True, blank=True)
     item_condition = models.CharField(max_length=256, choices=CONDITION['condition'], blank=True, null=True, db_column="item_condition")
-    user = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='items')
+    user = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='items', blank=True)
     price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_column="price", default=0)
     is_free = models.BooleanField(default=False, db_column='is free')
     delivery_method = models.CharField(max_length=256, choices=METHODS['method'], db_column="delivery_method", blank=True, null=True)
@@ -87,7 +87,7 @@ class IsraeliAddress(models.Model):
 class CustomerDetails(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.PROTECT, related_name='customer_dateils')
-    address = models.ForeignKey(IsraeliAddress, on_delete=models.PROTECT, null=True, blank= True)
+    address = models.ForeignKey(IsraeliAddress, on_delete=models.PROTECT, null=True, blank=True)
     phone_number = PhoneNumberField(unique=True, null=False, blank=False)
 
     class Meta:

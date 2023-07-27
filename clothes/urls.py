@@ -18,7 +18,6 @@ from django.urls import path, include
 from clothes_app.views.stats import stats
 
 
-
 urlpatterns = [
     path('api/auth/', include('clothes_app.urls.auth')),
     path('api/items/', include('clothes_app.urls.items')),

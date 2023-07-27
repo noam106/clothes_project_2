@@ -3,6 +3,7 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from clothes_app.models import CustomerDetails
+from phonenumber_field.serializerfields import PhoneNumberField
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -42,3 +43,15 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'first_name', 'last_name', 'is_staff')
+
+
+class UserCustomerSerializer(serializers.ModelSerializer):
+
+    def to_representation(self, instance):
+        user_repr = super().to_representation(instance)
+        user_repr['phone_number'] = instance.customer_dateils.phone_number
+        return user_repr
+
+    class Meta:
+        model = User
+        fields = ("id", 'email', 'first_name', 'last_name', 'is_staff')
