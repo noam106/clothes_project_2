@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermiss
 from rest_framework.viewsets import GenericViewSet
 from clothes_app.models import Item
 from clothes_app.serializers.items import ItemSerializer
-
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class ItemPaginationClass(PageNumberPagination):
@@ -31,9 +31,10 @@ class ItemFilterSet(FilterSet):
     price = django_filters.RangeFilter(field_name='price')
     description = django_filters.CharFilter(field_name='description', lookup_expr='icontains')
     name = django_filters.CharFilter(lookup_expr='icontains')
-    item_type = django_filters.ChoiceFilter(choices=Item.CLOTHES_LIST)
+    item_type = django_filters.CharFilter(lookup_expr="icontains")
     colors = django_filters.CharFilter(lookup_expr='icontains')
-    item_condition = django_filters.CharFilter(field_name='item_condition__name', lookup_expr='icontains')
+    item_condition = django_filters.CharFilter(field_name='item_condition', lookup_expr='icontains')
+    user = django_filters.NumberFilter()
 
     class Meta:
         model = Item
@@ -43,5 +44,6 @@ class ItemFilterSet(FilterSet):
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = ItemFilterSet
     permission_classes = [IsAuthenticatedOrReadOnly, ItemPermissions]

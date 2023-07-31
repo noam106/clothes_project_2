@@ -22,5 +22,6 @@ urlpatterns = [
     path('api/auth/', include('clothes_app.urls.auth')),
     path('api/items/', include('clothes_app.urls.items')),
     path('api/addresses/', include('clothes_app.urls.address')),
+    path('api/reviews/', include('clothes_app.urls.reviews')),
     path('admin/', admin.site.urls),
 ]

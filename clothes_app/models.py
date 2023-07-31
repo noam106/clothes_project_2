@@ -87,7 +87,7 @@ class IsraeliAddress(models.Model):
 class CustomerDetails(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.PROTECT, related_name='customer_dateils')
-    address = models.ForeignKey(IsraeliAddress, on_delete=models.PROTECT, null=True, blank=True)
+    address = models.ForeignKey(IsraeliAddress, on_delete=models.PROTECT, null=True, blank=True, related_name='user')
     phone_number = PhoneNumberField(unique=True, null=False, blank=False)
 
     class Meta:
