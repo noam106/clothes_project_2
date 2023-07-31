@@ -44,8 +44,8 @@ class ReviewsViewSet(ModelViewSet):
                 qs = qs.filter(user=self.request.user)
         return qs
 
-    def perform_create(self, serializer):
-        if Review.objects.filter(user=self.request.user, movie_id=serializer.validated_data['movie']).exists():
-            raise ValidationError(detail="User can create only one review per movie")
-        serializer.validated_data['user'] = self.request.user
-        serializer.save()
+    # def perform_create(self, serializer):
+    #     if Review.objects.filter(user=self.request.user, movie_id=serializer.validated_data['movie']).exists():
+    #         raise ValidationError(detail="User can create only one review per movie")
+    #     serializer.validated_data['user'] = self.request.user
+    #     serializer.save()
