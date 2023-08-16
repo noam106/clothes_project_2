@@ -8,4 +8,5 @@ router.register(r'', ItemViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    # path("item")
 ]

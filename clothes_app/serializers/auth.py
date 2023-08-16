@@ -49,7 +49,7 @@ class UserCustomerSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         user_repr = super().to_representation(instance)
-        user_repr['phone_number'] = instance.customer_dateils.phone_number
+        # user_repr['phone_number'] = instance.customer_dateils.phone_number
         return user_repr
 
     class Meta:

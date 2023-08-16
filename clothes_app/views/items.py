@@ -11,7 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 
 class ItemPaginationClass(PageNumberPagination):
-    page_size = 15
+    page_size = 5
 
 
 class ItemPermissions(BasePermission):
@@ -47,3 +47,4 @@ class ItemViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ItemFilterSet
     permission_classes = [IsAuthenticatedOrReadOnly, ItemPermissions]
+    pagination_class = ItemPaginationClass
