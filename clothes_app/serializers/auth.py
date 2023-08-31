@@ -4,7 +4,13 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from clothes_app.models import CustomerDetails
 from phonenumber_field.serializerfields import PhoneNumberField
-
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+import os.path
+import uuid
+from rest_framework.response import Response
+from google.oauth2 import service_account
+from google.cloud import storage
 
 class SignupSerializer(serializers.ModelSerializer):
 
@@ -49,6 +55,7 @@ class UserCustomerSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         user_repr = super().to_representation(instance)
+        user_repr['img_url'] = instance.customer_dateils.img_url
         # user_repr['phone_number'] = instance.customer_dateils.phone_number
         return user_repr
 
