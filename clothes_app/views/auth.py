@@ -112,3 +112,7 @@ def google_login(request):
     print(google_jwt)
     return Response()
 
+@api_view(['GET'])
+def user_img_url(request):
+    user_serializer = UserCustomerSerializer(instance=request.user, many=False)
+    return Response(data=user_serializer.data)
