@@ -3,6 +3,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
+from clothes_app.models import CustomerDetails
 from clothes_app.serializers.auth import SignupSerializer, UserSerializer, UserCustomerSerializer
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -80,7 +82,16 @@ def upload_profile_img(request):
     blob = bucket.blob(object_name)
     blob.upload_from_file(file_stream)
 
-    return Response()
+    # object_name
+    img_url = f"https://storage.googleapis.com/{bucket_name}/{object_name}"
+
+    # update user's img url
+    cDetails = CustomerDetails.objects.filter(user=request.user).first()
+    print(cDetails)
+    cDetails.img_url = img_url
+    cDetails.save()
+    return Response(img_url)
+
 
 @api_view(['POST'])
 def google_login(request):
@@ -98,7 +109,7 @@ def google_login(request):
         except User.DoesNotExist:
             print('does not exist')
             user = User.objects.create_user(username=email, email=email, password=str(uuid.uuid4()),
-                                     first_name=idinfo['given_name'], last_name=idinfo['family_name'])
+                                            first_name=idinfo['given_name'], last_name=idinfo['family_name'])
 
         refresh = RefreshToken.for_user(user)
         return Response(data={
@@ -111,6 +122,7 @@ def google_login(request):
         print(e)
     print(google_jwt)
     return Response()
+
 
 @api_view(['GET'])
 def user_img_url(request):

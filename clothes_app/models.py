@@ -6,7 +6,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Item(models.Model):
-
     CLOTHES_LIST = {
         'clothe': [
             ('sweater', 'Sweater'),
@@ -52,17 +51,20 @@ class Item(models.Model):
     class Meta:
         db_table = "items"
         ordering = ['id']
+
     # name will be used as haeder for the item
     name = models.CharField(max_length=256, validators=[MinLengthValidator(4)], default='none', db_column='name',
                             null=False, blank=False)
     item_type = models.CharField(max_length=256, choices=CLOTHES_LIST['clothe'], db_column="item_type")
-    colors = models.CharField(max_length=128, db_column='colors', null=False, blank=False,)
+    colors = models.CharField(max_length=128, db_column='colors', null=False, blank=False, )
     description = models.TextField(db_column='description', null=True, blank=True)
-    item_condition = models.CharField(max_length=256, choices=CONDITION['condition'], blank=True, null=True, db_column="item_condition")
+    item_condition = models.CharField(max_length=256, choices=CONDITION['condition'], blank=True, null=True,
+                                      db_column="item_condition")
     user = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='items', blank=True)
     price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_column="price", default=0)
     is_free = models.BooleanField(default=False, db_column='is free')
-    delivery_method = models.CharField(max_length=256, choices=METHODS['method'], db_column="delivery_method", blank=True, null=True)
+    delivery_method = models.CharField(max_length=256, choices=METHODS['method'], db_column="delivery_method",
+                                       blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.price == 0:
@@ -74,7 +76,7 @@ class IsraeliAddress(models.Model):
     street_address = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=255, null=False, blank=False)
     district = models.CharField(max_length=255, null=True, blank=True)
-    postal_code = models.CharField(max_length=10,  null=True, blank=True)
+    postal_code = models.CharField(max_length=10, null=True, blank=True)
 
     class Meta:
         db_table = "address"
@@ -85,8 +87,7 @@ class IsraeliAddress(models.Model):
 
 
 class CustomerDetails(models.Model):
-
-    user = models.OneToOneField(User, on_delete=models.PROTECT, related_name='customer_dateils')
+    user = models.OneToOneField(User, on_delete=models.PROTECT, related_name='customer_dateils', null=True)
     address = models.ForeignKey(IsraeliAddress, on_delete=models.PROTECT, null=True, blank=True, related_name='user')
     phone_number = PhoneNumberField(unique=True, null=False, blank=False)
     img_url = models.CharField(max_length=1024, null=True)
@@ -94,7 +95,6 @@ class CustomerDetails(models.Model):
     class Meta:
         db_table = "customer_dateils"
         ordering = ['id']
-
 
 
 # class DeliveryMethods(models.Model):
@@ -130,7 +130,6 @@ class CustomerDetails(models.Model):
 #     item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
 class ItemInterest(models.Model):
-
     class Meta:
         db_table = "items_interest"
         ordering = ['id']
@@ -140,7 +139,6 @@ class ItemInterest(models.Model):
 
 
 class ItemImage(models.Model):
-
     class Meta:
         db_table = "item_img"
         ordering = ['id']
@@ -150,13 +148,13 @@ class ItemImage(models.Model):
 
 
 class Review(models.Model):
-
     item = models.ForeignKey(Item, on_delete=models.RESTRICT)
     reviewer = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='reviewer_set')
     reviewed = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='reviewed_set')
     review_date = models.DateTimeField(auto_now_add=True)
 
-    rating = models.SmallIntegerField(db_column='rating', null=False, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    rating = models.SmallIntegerField(db_column='rating', null=False,
+                                      validators=[MinValueValidator(1), MaxValueValidator(10)])
     review_text = models.TextField(db_column='review_text', null=True, blank=True)
     created_at = models.DateField(db_column='created_at', null=False, auto_now_add=True)
 

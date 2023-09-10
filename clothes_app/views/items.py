@@ -11,11 +11,10 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission, SAFE_METHODS, \
     IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet
-from clothes_app.models import Item
+from clothes_app.models import Item, ItemImage
 from clothes_app.serializers.items import ItemSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
-
 
 
 class ItemPaginationClass(PageNumberPagination):
@@ -62,17 +61,23 @@ class ItemViewSet(viewsets.ModelViewSet):
 @permission_classes([IsAuthenticated])
 def upload_item_img(request):
     bucket_name = 'suitapp'
-    file_stream = request.FILES['file'].file
-    _, ext = os.path.splitext(request.FILES['file'].name)
+    files = request.FILES.getlist("files")
 
-    object_name = f"profile_img_{uuid.uuid4()}{ext}"
+    item = Item.get(id=request.item.id) # check if the item exists here (if not make it exist)
+    for file_stream in files:
+        _, ext = os.path.splitext(request.FILES['file'].name)
 
-    credentials = service_account.Credentials.from_service_account_file(
-        'C:\\Users\\USER001\\Desktop\\Python_JB\\suitapp-service-account-key.json')
+        object_name = f"profile_img_{uuid.uuid4()}{ext}"
 
-    storage_client = storage.Client(credentials=credentials)
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(object_name)
-    blob.upload_from_file(file_stream)
+        credentials = service_account.Credentials.from_service_account_file(
+            'C:\\Users\\USER001\\Desktop\\Python_JB\\suitapp-service-account-key.json')
+
+        storage_client = storage.Client(credentials=credentials)
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(object_name)
+        blob.upload_from_file(file_stream)
+        img_url = f"https://storage.googleapis.com/{bucket_name}/{object_name}"
+        new_item_img = ItemImage(img_url=img_url, item=item)
+        new_item_img.save()
 
     return Response()
