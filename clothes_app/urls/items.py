@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from clothes_app.views.items import ItemViewSet, upload_item_img
+from clothes_app.views.items import ItemViewSet,create_item
 
 router = routers.DefaultRouter()
 router.register(r'', ItemViewSet)
@@ -9,6 +9,6 @@ router.register(r'', ItemViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     # path("item")
-    path('img/', upload_item_img),
+    #path('img/', upload_item_img),
 
 ]

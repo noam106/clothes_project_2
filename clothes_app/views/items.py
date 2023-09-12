@@ -2,10 +2,10 @@ import os
 import uuid
 
 import django_filters
-from django.contrib.staticfiles import storage
 from django_filters.rest_framework import FilterSet
+from google.cloud import storage
 from google.oauth2 import service_account
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission, SAFE_METHODS, \
@@ -56,14 +56,47 @@ class ItemViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, ItemPermissions, IsAuthenticated]
     pagination_class = ItemPaginationClass
 
+    def create(self, request, *args, **kwargs):
+        data = {key: value[0] for key, value in dict(request.POST).items()}
+        data["user"] = request.user.id
+        print(data)
+        serializer = ItemSerializer(data=data)
+        files = request.FILES.getlist("file")
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        item = serializer.save()
+        print(files)
+        bucket_name = 'suitapp'
+        for file_stream in files:
+            _, ext = os.path.splitext(request.FILES['file'].name)
+
+            object_name = f"profile_img_{uuid.uuid4()}{ext}"
+
+            credentials = service_account.Credentials.from_service_account_file(
+                'C:\\Users\\USER001\\Desktop\\Python_JB\\suitapp-service-account-key.json')
+
+            storage_client = storage.Client(credentials=credentials)
+            bucket = storage_client.bucket(bucket_name)
+            blob = bucket.blob(object_name)
+            blob.upload_from_file(file_stream)
+            img_url = f"https://storage.googleapis.com/{bucket_name}/{object_name}"
+            new_item_img = ItemImage(img_url=img_url, item=item)
+            new_item_img.save()
+
+        return Response(data, status=status.HTTP_201_CREATED)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def upload_item_img(request):
-    bucket_name = 'suitapp'
+def create_item(request):
+    data = {key: value[0].strip('"') for key, value in dict(request.POST).items()}
+    serializer = ItemSerializer(data=data)
     files = request.FILES.getlist("files")
-
-    item = Item.get(id=request.item.id) # check if the item exists here (if not make it exist)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    item = serializer.save()
+    print(files)
+    bucket_name = 'suitapp'
     for file_stream in files:
         _, ext = os.path.splitext(request.FILES['file'].name)
 
@@ -80,4 +113,4 @@ def upload_item_img(request):
         new_item_img = ItemImage(img_url=img_url, item=item)
         new_item_img.save()
 
-    return Response()
+    return Response(item.data, status=status.HTTP_201_CREATED)

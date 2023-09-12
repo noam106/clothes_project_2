@@ -7,7 +7,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 class Item(models.Model):
     CLOTHES_LIST = {
         'clothe': [
-            ('sweater', 'Sweater'),
+            ('Sweater', 'sweater'),
             ('jacket', 'Jacket'),
             ('pants', 'Pants'),
             ('vest', 'Vest'),
@@ -54,16 +54,15 @@ class Item(models.Model):
     # name will be used as haeder for the item
     name = models.CharField(max_length=256, validators=[MinLengthValidator(4)], default='none', db_column='name',
                             null=False, blank=False)
-    item_type = models.CharField(max_length=256, choices=CLOTHES_LIST['clothe'], db_column="item_type")
+    item_type = models.CharField(max_length=256, null=False, blank=False, db_column="item_type")
     colors = models.CharField(max_length=128, db_column='colors', null=False, blank=False, )
     description = models.TextField(db_column='description', null=True, blank=True)
-    item_condition = models.CharField(max_length=256, choices=CONDITION['condition'], blank=True, null=True,
+    item_condition = models.CharField(max_length=256, blank=True, null=True,
                                       db_column="item_condition")
     user = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='items', blank=True)
     price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, db_column="price", default=0)
     is_free = models.BooleanField(default=False, db_column='is free')
-    delivery_method = models.CharField(max_length=256, choices=METHODS['method'], db_column="delivery_method",
-                                       blank=True, null=True)
+    delivery_method = models.CharField(max_length=256, db_column="delivery_method", blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.price == 0:

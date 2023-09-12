@@ -9,7 +9,7 @@ class ItemSerializer(serializers.ModelSerializer):
         model = Item
         fields = '__all__'
 
-    def create(self, validated_data):
-        user_sent_request = self.context['request'].user
-        validated_data['user'] = user_sent_request
-        return super().create(validated_data)
+    # def create(self, validated_data):
+    #     user_sent_request = self.context['request'].user
+    #     validated_data['user'] = user_sent_request
+    #     return super().create(validated_data)
