@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
-# from address.address import *
 from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator
 from phonenumber_field.modelfields import PhoneNumberField
 
