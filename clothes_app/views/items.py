@@ -53,8 +53,11 @@ class ItemViewSet(viewsets.ModelViewSet):
     serializer_class = ItemSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ItemFilterSet
-    permission_classes = [IsAuthenticatedOrReadOnly, ItemPermissions, IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly, ItemPermissions]
     pagination_class = ItemPaginationClass
+
+    def get_queryset(self):
+        return Item.objects.prefetch_related('item_img')
 
     def create(self, request, *args, **kwargs):
         data = {key: value[0] for key, value in dict(request.POST).items()}
