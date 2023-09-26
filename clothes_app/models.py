@@ -87,7 +87,7 @@ class IsraeliAddress(models.Model):
 class CustomerDetails(models.Model):
     user = models.OneToOneField(User, on_delete=models.PROTECT, related_name='customer_dateils', null=True)
     address = models.ForeignKey(IsraeliAddress, on_delete=models.PROTECT, null=True, blank=True, related_name='user')
-    phone_number = PhoneNumberField(unique=True, null=False, blank=False)
+    phone_number = models.CharField(unique=True, null=False, blank=False)
     img_url = models.CharField(max_length=1024, null=True)
 
     class Meta:

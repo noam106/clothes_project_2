@@ -11,7 +11,7 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission, SAFE_METHODS, \
     IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet
-from clothes_app.models import Item, ItemImage
+from clothes_app.models import Item, ItemImage, CustomerDetails
 from clothes_app.serializers.items import ItemSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
@@ -30,6 +30,9 @@ class ItemPermissions(BasePermission):
     def has_object_permission(self, request, view, obj):
         if view.action == 'retrieve' or view.action == 'update':
             return request.user.is_staff or request.user == obj.user
+
+# class ItemIntrestFilter(FilterSet,CustomerDetails):
+
 
 
 class ItemFilterSet(FilterSet):

@@ -17,6 +17,7 @@ from google.cloud import storage
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from rest_framework_simplejwt.tokens import RefreshToken
+from ..infra import url
 
 
 # class UserViewSet(ModelViewSet):
@@ -74,8 +75,7 @@ def upload_profile_img(request):
 
     object_name = f"profile_img_{uuid.uuid4()}{ext}"
 
-    credentials = service_account.Credentials.from_service_account_file(
-        'C:\\Users\\USER001\\Desktop\\Python_JB\\suitapp-service-account-key.json')
+    credentials = service_account.Credentials.from_service_account_file(url.LOCAL_PC_SERVICE_KEY_PATH)
 
     storage_client = storage.Client(credentials=credentials)
     bucket = storage_client.bucket(bucket_name)

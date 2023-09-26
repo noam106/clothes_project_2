@@ -57,9 +57,18 @@ class UserCustomerSerializer(serializers.ModelSerializer):
         user_repr = super().to_representation(instance)
         try:
             user_repr['img_url'] = instance.customer_dateils.img_url
+            user_repr['address'] = instance.customer_dateils.address.street_address, instance.customer_dateils.address.city,\
+                instance.customer_dateils.address.district, instance.customer_dateils.address.postal_code
+
+            # user_repr['address'] = instance.customer_dateils.street_address.street_address
+            # user_repr['address'] = instance.customer_dateils.postal_code.postal_code
+            # user_repr['address'] = instance.customer_dateils.district.district
+            user_repr['phone_number'] = instance.customer_dateils.phone_number
         except:
             user_repr['img_url'] = None
-            # user_repr['phone_number'] = instance.customer_dateils.phone_number
+            user_repr['address'] = None
+            user_repr['phone_number'] = None
+        print(user_repr)
         return user_repr
 
     class Meta:
