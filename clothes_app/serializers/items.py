@@ -1,16 +1,18 @@
 from rest_framework import serializers
 
 from clothes_app.models import Item, ItemImage
+from clothes_app.serializers.auth import UserSerializer, UserCustomerSerializer
 
 
 class ItemImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemImage
-        fields = ('img_url',)
+        fields = ('img_url')
 
 
 class ItemSerializer(serializers.ModelSerializer):
     item_img = ItemImageSerializer(many=True, read_only=True)
+    user = UserCustomerSerializer(read_only=True)
 
     class Meta:
         model = Item
