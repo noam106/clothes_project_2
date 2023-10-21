@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermiss
     IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet
 from clothes_app.models import Item, ItemImage, CustomerDetails
-from clothes_app.serializers.items import ItemSerializer
+from clothes_app.serializers.items import ItemSerializer, ItemCreateSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 
@@ -32,7 +32,6 @@ class ItemPermissions(BasePermission):
             return request.user.is_staff or request.user == obj.user
 
 # class ItemIntrestFilter(FilterSet,CustomerDetails):
-
 
 
 class ItemFilterSet(FilterSet):
@@ -96,7 +95,7 @@ class ItemViewSet(viewsets.ModelViewSet):
 @permission_classes([IsAuthenticated])
 def create_item(request):
     data = {key: value[0].strip('"') for key, value in dict(request.POST).items()}
-    serializer = ItemSerializer(data=data)
+    serializer = ItemCreateSerializer(data=data)
     files = request.FILES.getlist("files")
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
